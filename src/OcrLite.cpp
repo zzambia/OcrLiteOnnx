@@ -1,6 +1,7 @@
 #include <iosfwd>
+#include <fstream>
 #include "OcrLite.h"
-#include <opencv/cv.hpp>
+#include <opencv2/opencv.hpp>
 #include <LogUtils.h>
 #include <RRLib.h>
 #include "OcrUtils.h"
@@ -326,7 +327,7 @@ std::string OcrLite::detect(const char *path, const char *imgName, const float i
         std::string partImgFile = getPartImgFilePath(path, imgName, i);
         saveImg(textImg, partImgFile.c_str());
 
-
+#if 1
         if (angleImg.rows > 1.5 * angleImg.cols) {
             angleImg = matRotateClockWise90(angleImg);
             textImg = matRotateClockWise90(textImg);
@@ -334,6 +335,11 @@ std::string OcrLite::detect(const char *path, const char *imgName, const float i
         Angle angle = getAngle(angleImg);
         if (angle.index == 0 || angle.index == 2)
             textImg = matRotateClockWise180(textImg);
+#else
+        Angle angle = Angle(0, 1.00f);
+        angleImg = matRotateClockWise90(angleImg);
+        textImg = matRotateClockWise90(textImg);
+#endif
         printf("angle(index=%d, score=%f)\n", angle.index, angle.score);
 
         std::string debugImgFile = getDebugImgFilePath(path, imgName, i);
